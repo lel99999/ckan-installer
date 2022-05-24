@@ -1,20 +1,24 @@
 ---
 # tasks file for postgres
-- template:
+- name: Centos Repo Template 
+  ansible.builtin.template:
     src=CentOS-Base.repo.j2
     dest=/etc/yum.repos.d/CentOS-Base.repo
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: install cert utilities
   yum: 
     name: ca-certificates
     state: latest
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: ensure PGDG Yum repo is installed
   shell: rpm -Uvh http://yum.postgresql.org/9.4/redhat/rhel-6-x86_64/pgdg-centos94-9.4-3.noarch.rpm 
     creates=/etc/yum.repos.d/pgdg-94-centos.repo
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: install postgres dependencies
   yum: name={{item}}
@@ -23,24 +27,28 @@
     - postgresql94-server
     - postgresql94-libs
     - python-psycopg2
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: determine if db initialized
   stat: path=/var/lib/pgsql/9.4/data/pg_hba.conf
   ignore_errors: true
   register: db_init
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: initialize postgres
   shell: service postgresql-9.4 initdb 
   when: not db_init.stat.exists
   register: init_db_result
   failed_when: "'FAILED' in init_db_result.stderr" 
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: start postgres db
   service: name=postgresql-9.4 state=started enabled=yes
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: setup pg_hba.conf
   template:
@@ -48,9 +56,11 @@
     dest=/var/lib/pgsql/9.4/data/pg_hba.conf
     owner=postgres
   register: pg_hba
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: restart pgsql
   service: name=postgresql-9.4 state=restarted
   when: pg_hba|changed
-  sudo: yes
+  become: yes
+  become_method: sudo

@@ -8,9 +8,9 @@
     login_user={{postgres_login_user}}
     login_password={{postgres_login_password}}
     port={{postgres_port}}
-  sudo: yes
   register: create_ckan_db
-  sudo_user: postgres
+  become: true
+  become_user: postgres
 
 - name: create ckan db user
   postgresql_user: 
@@ -18,9 +18,9 @@
     name="{{ckan_db_user}}" 
     password="{{ckan_db_password}}"
     #priv="ALL"
-  sudo: yes
   register: create_ckan_db_user
-  sudo_user: postgres
+  become: true
+  become_user: postgres
 
 - name: create ckan datastore db
   postgresql_db:
@@ -31,9 +31,9 @@
     login_user={{postgres_login_user}}
     login_password={{postgres_login_password}}
     port={{postgres_port}}
-  sudo: yes
   register: create_datastore_db
-  sudo_user: postgres
+  become: true
+  become_user: postgres
 
 - name: create datastore db user
   postgresql_user: 
@@ -41,8 +41,7 @@
     name="{{ckan_datastore_db_user}}" 
     password="{{ckan_datastore_db_password}}"
     #priv="ALL"
-  sudo: yes
   register: create_datastore_db_user
-  sudo_user: postgres
-
+  become: true
+  become_user: postgres
 
