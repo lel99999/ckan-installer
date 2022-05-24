@@ -2,4 +2,5 @@
 # handlers file for solr
 - name: restart solr
   service: name=solr state=restarted sleep=1
-  sudo: yes
+  become: yes
+  become_method: sudo

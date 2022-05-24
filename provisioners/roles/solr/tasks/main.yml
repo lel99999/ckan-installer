@@ -2,11 +2,13 @@
 # tasks file for solr
 - name: install java
   yum: name=java-1.7.0-openjdk-devel
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: install libselinux-python
   yum: name=libselinux-python
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: download solr source binary
   get_url: 
@@ -21,7 +23,8 @@
     createhome=no
     system=yes
     password="{{solr_user_password}}"
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: create solr home
   file: 
@@ -29,45 +32,53 @@
     state=directory
     owner="{{solr_user}}"
     group="{{solr_group}}"
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: unzip solr source binary
   command: tar zxf solr-4.9.1.tgz
     creates=/tmp/solr-4.9.1/
     chdir=/tmp
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: copy solr binary to solr home
   command: cp -R /tmp/solr-4.9.1/example/. {{solr_home}}
     creates="{{solr_home}}/README.txt"
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: create solr service entry
   template: 
     src=solr.sh.j2
     dest=/etc/init.d/solr
     mode=755
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: create config for jetty
   template: 
     src=jetty.j2
     dest=/etc/default/jetty
     mode=755
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: create CKAN solr schema
   template:
     src=schema.xml.j2
     dest="{{solr_home}}/solr/collection1/conf/schema.xml"
   notify: restart solr
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: chown the solr home directory
   command: chown -R {{solr_user}}:{{solr_group}} {{solr_home}}
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: start solr service
   service: name=solr state=started enabled=yes
-  sudo: yes
+  become: yes
+  become_method: sudo
 
