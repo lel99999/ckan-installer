@@ -8,4 +8,5 @@
 - name: stop iptables
   service: name=iptables state=stopped enabled=false
   when: groups.has_key('local') and inventory_hostname in groups.local
-  sudo: yes
+  become: yes
+  become_method: sudo

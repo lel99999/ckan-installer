@@ -12,7 +12,8 @@
     - curl-devel
     - sqlite-devel
     - xz-libs
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: Check if python is already installed
   stat: path=/usr/local/bin/python2.7
@@ -35,19 +36,22 @@
     - make
     - make altinstall
   when: not python.stat.exists
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: create symlink for libpython
   file: 
     src=/usr/local/lib/libpython2.7.so.1.0
     path=/usr/lib/libpython2.7.so.1.0
     state=link
-  sudo: yes
+  become: yes
+  become_method: sudo
   register: symlink_libpython
 
 - name: run ldconfig
   command: ldconfig
-  sudo: yes
+  become: yes
+  become_method: sudo
   when: symlink_libpython|changed
 
 - name: downloads setuptools
@@ -59,27 +63,31 @@
   command: /usr/local/bin/python2.7 ez_setup.py
     chdir=/tmp/
     creates=/usr/local/bin/easy_install-2.7
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: installs pip
   command: /usr/local/bin/easy_install-2.7 pip
     chdir=/tmp/
     creates=/usr/local/bin/pip2.7
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: creates symlink in /usr/local/bin
   file: 
     path=/usr/local/bin/python
     src=/usr/local/bin/python2.7
     state=link
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: creates symlink in /usr/bin
   file: 
     path=/usr/bin/python2.7
     src=/usr/local/bin/python2.7
     state=link
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: creates symlink in /usr/bin for pip
   file: 
@@ -87,8 +95,10 @@
     src=/usr/local/bin/pip2.7
     state=link
     force=yes
-  sudo: yes
+  become: yes
+  become_method: sudo
 
 - name: pip install virtualenv
   pip: name=virtualenv
-  sudo: yes
+  become: yes
+  become_method: sudo
