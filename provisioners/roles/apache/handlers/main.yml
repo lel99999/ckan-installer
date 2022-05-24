@@ -2,4 +2,5 @@
 # handlers file for apache
 - name: restart apache
   service: name=httpd state=restarted sleep=1
-  sudo: yes
+  become: yes
+  become_method: sudo
